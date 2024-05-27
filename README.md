@@ -2,13 +2,14 @@
 
 An app for testing random small things. Powered by svelte and [`monaco editor`](https://www.npmjs.com/package/monaco-editor).
 
-## Features
+## Current Features
 
-Currently, this project is empty
+- The editor
 
 ## Coming soon
 
-- The Editor
+- Page layout
 - A preview frame
+- Textmate grammar support
 - Save project to local device
 - Upload custom files
