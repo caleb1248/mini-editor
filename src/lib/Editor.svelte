@@ -1,6 +1,7 @@
 <script lang="ts">
   import * as monaco from 'monaco-editor';
   import { onDestroy } from 'svelte';
+  import addTextmate from './textmate/textmate';
 
   const editorDiv = document.createElement('div');
   editorDiv.classList.add('editor');
@@ -11,6 +12,8 @@
     automaticLayout: true,
     theme: 'vs-dark',
   });
+
+  addTextmate();
 
   function initEditor(div: HTMLDivElement) {
     div.appendChild(editorDiv);

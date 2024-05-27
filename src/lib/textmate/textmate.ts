@@ -1,34 +1,40 @@
-import tm, { type IOnigLib } from 'vscode-textmate';
-import oniguruma from 'vscode-oniguruma';
-import wasmURL from 'vscode-oniguruma/release/onig.wasm?url';
-import * as monaco from 'monaco-editor';
-const onigWasm = await fetch(wasmURL).then((response) =>
-  response.arrayBuffer()
-);
+import * as tm from 'monaco-textmate';
+import wasmURL from 'onigasm/lib/onigasm.wasm?url';
+import tsGrammar from './grammars/TypeScript.tmLanguage.json';
 
-const onigLib = oniguruma.loadWASM({ data: onigWasm }).then(() => {
-  return {
-    createOnigScanner(patterns) {
-      return new oniguruma.OnigScanner(patterns);
-    },
-    createOnigString(s) {
-      return new oniguruma.OnigString(s);
-    },
-  } as IOnigLib;
-});
+import * as monaco from 'monaco-editor';
+import { loadWASM } from 'onigasm';
+
+await loadWASM(await fetch(wasmURL).then((res) => res.arrayBuffer()));
 
 const registry = new tm.Registry({
-  onigLib,
-  loadGrammar: async (scopeName) => {
-    if (scopeName === 'source.js') {
-    }
-    return null;
+  getGrammarDefinition: async (scopeName) => {
+    if (scopeName === 'source.ts') {
+      return {
+        format: 'json',
+        content: tsGrammar,
+      };
+    } else throw new Error(`No grammar registered for scope: ${scopeName}`);
   },
 });
 
-monaco.editor.defineTheme('myCoolTheme', {
-  base: 'vs-dark',
-  inherit: true,
-  rules: [{ token: 'comment', foreground: 'ffa500', fontStyle: 'italic' }],
-  colors: {},
-});
+export default async function addTextmate() {
+  const grammar = await registry.loadGrammar('source.ts');
+
+  if (!grammar) {
+    throw new Error('Failed to load TypeScript grammar');
+  }
+
+  console.log('Loaded TypeScript grammar');
+  monaco.languages.register({ id: 'typescript' });
+  monaco.languages.setTokensProvider('typescript', {
+    getInitialState: () => tm.INITIAL,
+    tokenizeEncoded(line, state) {
+      const result = grammar.tokenizeLine2(line, state as tm.StackElement);
+      return {
+        tokens: result?.tokens,
+        endState: result?.ruleStack,
+      };
+    },
+  });
+}
