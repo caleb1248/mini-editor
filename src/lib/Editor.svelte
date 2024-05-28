@@ -5,7 +5,7 @@
 
   const editorDiv = document.createElement('div');
   editorDiv.classList.add('editor');
-
+  console.log(monaco);
   const editor = monaco.editor.create(editorDiv, {
     value: 'console.log("Hello, World!")',
     language: 'javascript',
@@ -13,8 +13,7 @@
     theme: 'vs-dark',
   });
 
-  addTextmate();
-
+  addTextmate(monaco);
   function initEditor(div: HTMLDivElement) {
     div.appendChild(editorDiv);
   }
