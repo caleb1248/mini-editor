@@ -5,6 +5,6 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 export default defineConfig({
   plugins: [svelte()],
   optimizeDeps: {
-    exclude: ['vscode-textmate', 'vscode-oniguruma'],
+    // exclude: ['vscode-textmate', 'vscode-oniguruma'],
   },
 });
