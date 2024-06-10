@@ -1,19 +1,28 @@
 <script lang="ts">
-  import * as monaco from 'monaco-editor';
-  import { onDestroy } from 'svelte';
-  import addTextmate from './textmate/textmate';
+  import * as monaco from "monaco-editor";
+  import { onDestroy } from "svelte";
+  import { TokensProviderCache, convertTheme } from "./textmate/textmate";
+  import themeJson from "./textmate/themes/my-theme.json";
 
-  const editorDiv = document.createElement('div');
-  editorDiv.classList.add('editor');
+  const editorDiv = document.createElement("div");
+  editorDiv.classList.add("editor");
   console.log(monaco);
+  monaco.editor.defineTheme("my-theme", convertTheme(themeJson));
+
   const editor = monaco.editor.create(editorDiv, {
     value: 'console.log("Hello, World!")',
-    language: 'javascript',
+    language: "typescript",
     automaticLayout: true,
-    theme: 'vs-dark',
+    theme: "vs-dark",
+  });
+  import("./prettier");
+
+  const cache = new TokensProviderCache(editor);
+  cache.getTokensProvider("source.ts").then((provider) => {
+    monaco.languages.setTokensProvider("typescript", provider);
+    monaco.editor.setTheme("my-theme");
   });
 
-  addTextmate(monaco);
   function initEditor(div: HTMLDivElement) {
     div.appendChild(editorDiv);
   }

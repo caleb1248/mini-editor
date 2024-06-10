@@ -1,71 +1,114 @@
-import * as vsctm from 'vscode-textmate';
-import * as oniguruma from 'vscode-oniguruma';
-import wasmUrl from 'vscode-oniguruma/release/onig.wasm?url';
-import tsLang from './grammars/TypeScript.tmLanguage?raw';
-import myTheme from './themes/my-theme.json'
-const vscodeOnigurumaLib = oniguruma
-  .loadWASM({ data: await fetch(wasmUrl).then((r) => r.arrayBuffer()) })
-  .then(() => {
-    return {
-      createOnigScanner(patterns) {
-        return new oniguruma.OnigScanner(patterns);
-      },
-      createOnigString(s) {
-        return new oniguruma.OnigString(s);
-      },
-    } as vsctm.IOnigLib;
-  });
+import * as vsctm from "vscode-textmate";
+import { loadWASM, OnigScanner, OnigString } from "vscode-oniguruma";
+import * as monaco from "monaco-editor";
+import wasmURL from "vscode-oniguruma/release/onig.wasm?url";
+import { TMToMonacoToken } from "./tm-to-monaco-token";
 
-// Create a registry that can create a grammar from a scope name.
+export {
+  convertTheme,
+  type IVScodeTheme,
+  type TokenColor,
+} from "./theme-converter";
+
+const wasmPromise = fetch(wasmURL)
+  .then((response) => response.arrayBuffer())
+  .then((buffer) => loadWASM({ data: buffer }))
+  .catch((error) => console.error("Failed to load `onig.wasm`:", error));
+
+const scopeUrlMap: Record<string, string> = {
+  "source.ts":
+    "https://raw.githubusercontent.com/microsoft/vscode/main/extensions/typescript-basics/syntaxes/TypeScript.tmLanguage.json",
+};
+
 const registry = new vsctm.Registry({
-  onigLib: vscodeOnigurumaLib,
-  loadGrammar: async (scopeName) => {
-    if (scopeName === 'source.js') {
-      console.log('providing grammar for source.js')
-      return vsctm.parseRawGrammar(tsLang);
+  onigLib: wasmPromise.then(() => {
+    return {
+      createOnigScanner: (sources) => new OnigScanner(sources),
+      createOnigString: (str) => new OnigString(str),
+    };
+  }),
+  loadGrammar(scopeName) {
+    function fetchGrammar(path: string) {
+      return fetch(path).then((response) => response.text());
     }
-    throw `Unknown scope name: ${scopeName}`;
+
+    const url = scopeUrlMap[scopeName];
+    if (url) {
+      return fetchGrammar(url).then((grammar) => JSON.parse(grammar));
+    }
+
+    return Promise.reject(
+      new Error(`No grammar found for scope: ${scopeName}`)
+    );
   },
 });
 
-// Load the JavaScript grammar and any other grammars included by it async.
-registry.loadGrammar('source.js').then((grammar) => {
-  const text = [`function sayHello(name) {`, `\treturn "Hello, " + name;`, `}`];
-  let ruleStack = vsctm.INITIAL;
-  for (let i = 0; i < text.length; i++) {
-    const line = text[i];
-    const lineTokens = grammar!.tokenizeLine(line, ruleStack);
-    console.log(`\nTokenizing line: ${line}`);
-    for (let j = 0; j < lineTokens.tokens.length; j++) {
-      const token = lineTokens.tokens[j];
-      console.log(
-        ` - token from ${token.startIndex} to ${token.endIndex} ` +
-        `(${line.substring(token.startIndex, token.endIndex)}) ` +
-        `with scopes ${token.scopes.join(', ')}`
+async function createTokensProvider(
+  scopeName: string,
+  editor?: monaco.editor.IStandaloneCodeEditor | undefined
+): Promise<monaco.languages.TokensProvider> {
+  let themeTokens: string[] | undefined;
+
+  if (editor) {
+    // @ts-expect-error
+    themeTokens = editor._themeService._theme.themeData.rules.map(
+      (rule: monaco.editor.ITokenThemeRule) => rule.token
+    );
+
+    // @ts-expect-error
+    editor._themeService.onDidColorThemeChange((theme) => {
+      const rules: monaco.editor.ITokenThemeRule[] = theme.themeData.rules;
+      themeTokens = rules.map((rule) => rule.token);
+    });
+  }
+
+  const grammar = await registry.loadGrammar(scopeName);
+
+  if (!grammar) {
+    throw new Error("Failed to load grammar");
+  }
+
+  const result: monaco.languages.TokensProvider = {
+    getInitialState() {
+      return vsctm.INITIAL;
+    },
+    tokenize(line, state: vsctm.StateStack) {
+      const lineTokens = grammar.tokenizeLine(line, state);
+      const tokens: monaco.languages.IToken[] = [];
+      for (const token of lineTokens.tokens) {
+        tokens.push({
+          startIndex: token.startIndex,
+          // monaco doesn't support an array of scopes so get the last one in the array
+          scopes: themeTokens
+            ? TMToMonacoToken(themeTokens, token.scopes)
+            : token.scopes[token.scopes.length - 1],
+        });
+      }
+      return { tokens, endState: lineTokens.ruleStack };
+    },
+  };
+  return result;
+}
+
+class TokensProviderCache {
+  private cache: Record<string, monaco.languages.TokensProvider> = {};
+
+  constructor(
+    private editor?: monaco.editor.IStandaloneCodeEditor | undefined
+  ) {}
+
+  async getTokensProvider(
+    scopeName: string
+  ): Promise<monaco.languages.TokensProvider> {
+    if (!this.cache[scopeName]) {
+      this.cache[scopeName] = await createTokensProvider(
+        scopeName,
+        this.editor
       );
     }
-    ruleStack = lineTokens.ruleStack;
-  }
-});
 
-export default function addTextmate(monaco: typeof import('monaco-editor')) {
-  monaco.languages.register({ id: 'typescript' });
-  registry.loadGrammar('source.js').then(grammar => {
-    monaco.languages.setTokensProvider('typescript', {
-      getInitialState: () => {
-        return vsctm.INITIAL;
-      },
-      tokenize: (line, state) => {
-        console.log('tokenizing line...')
-        const lineTokens = grammar!.tokenizeLine(line, state as vsctm.StateStack);
-        const monacoTokens = lineTokens.tokens.map((token) => ({
-          startIndex: token.startIndex,
-          scopes: token.scopes[0],
-        }));
-        return { tokens: monacoTokens, endState: lineTokens.ruleStack };
-      },
-    });
-  }).catch(e => alert(e.message));
-  monaco.editor.defineTheme('my-theme', myTheme);
-  monaco.editor.setTheme('my-theme')
+    return this.cache[scopeName];
+  }
 }
+
+export { TokensProviderCache };
