@@ -1,4 +1,4 @@
-import { format } from "prettier";
+import { format } from "./prettier";
 import * as typescript from "prettier/parser-typescript";
 import estree from "prettier/plugins/estree";
 import * as monaco from "monaco-editor";

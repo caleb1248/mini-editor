@@ -1,10 +1,2 @@
-import './app.css'
-import App from './App.svelte'
-import eruda from 'eruda';
-eruda.init();
-
-const app = new App({
-  target: document.getElementById('app')!,
-})
-
-export default app
+import './style.css';
+import './editor/editor.main';
