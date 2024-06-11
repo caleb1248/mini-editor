@@ -8,11 +8,6 @@ import convertTheme, { darkPlusTheme } from './textmate/theme-converter';
 const editorDiv = document.createElement('div');
 editorDiv.classList.add('editor');
 document.getElementById('app')?.appendChild(editorDiv);
-const model = monaco.editor.createModel(
-  "console.log('hello world!')",
-  'typescript',
-  monaco.Uri.file('main.ts')
-);
 
 // Register textmate theme
 const theme = convertTheme(darkPlusTheme);
@@ -20,9 +15,7 @@ const theme = convertTheme(darkPlusTheme);
 monaco.editor.defineTheme('dark-plus', theme);
 
 const editor = monaco.editor.create(editorDiv, {
-  model,
   tabSize: 2,
-  theme: 'dark-plus',
 });
 
 // Begin textmate stuff
@@ -34,9 +27,17 @@ monaco.languages.setTokensProvider(
   await cache.getTokensProvider('source.ts')
 );
 
-monaco.languages.setLanguageConfiguration('typescript', conf);
+monaco.editor.setTheme('dark-plus');
+
+const model = monaco.editor.createModel(
+  "console.log('hello world!')",
+  'typescript',
+  monaco.Uri.file('main.ts')
+);
+
+editor.setModel(model);
 
 window.addEventListener('resize', () => editor.layout());
 
 // @ts-ignore
-window.editor = editor;
+window.editor = editor; // Used for debuggin in the inspect panel.

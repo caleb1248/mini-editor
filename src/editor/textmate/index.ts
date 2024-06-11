@@ -1,6 +1,6 @@
 import * as vsctm from 'vscode-textmate';
 import { loadWASM, OnigScanner, OnigString } from 'vscode-oniguruma';
-import * as monaco from 'monaco-editor-core';
+import * as monaco from 'monaco-editor';
 import wasmURL from 'vscode-oniguruma/release/onig.wasm?url';
 import { TMToMonacoToken } from './tm-to-monaco-token';
 
@@ -88,11 +88,6 @@ async function createTokensProvider(
     },
   };
 
-  console.log(
-    grammar
-      .tokenizeLine('function x(y) {return y}', vsctm.INITIAL)
-      .tokens.map((token) => token.scopes)
-  );
   return result;
 }
 

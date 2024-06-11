@@ -2,6 +2,7 @@ export interface IVScodeTheme {
   $schema: 'vscode://schemas/color-theme';
   name?: string | undefined;
   include?: string | undefined;
+  type: 'dark' | 'light';
   tokenColors: TokenColor[];
   colors?:
     | {

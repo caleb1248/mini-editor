@@ -1,7 +1,7 @@
 import darkPlusTheme from './theme';
 import type { IVScodeTheme } from './theme';
 
-import type { editor } from 'monaco-editor-core';
+import type { editor } from 'monaco-editor';
 
 export function convertTheme(theme: IVScodeTheme): editor.IStandaloneThemeData {
   const rules = [];
@@ -21,10 +21,8 @@ export function convertTheme(theme: IVScodeTheme): editor.IStandaloneThemeData {
     }
   }
 
-  console.log(rules.map((rule) => rule.token));
-
   return {
-    base: 'vs-dark',
+    base: theme.type === 'dark' ? 'vs-dark' : 'vs',
     inherit: false,
     rules,
     colors: theme.colors || {},
