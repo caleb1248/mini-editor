@@ -10,8 +10,11 @@ const wasmPromise = fetch(wasmURL)
   .catch((error) => console.error('Failed to load `onig.wasm`:', error));
 
 const scopeUrlMap: Record<string, string> = {
-  'source.ts':
-    'https://raw.githubusercontent.com/microsoft/vscode/main/extensions/typescript-basics/syntaxes/TypeScript.tmLanguage.json',
+  'source.ts': '/TypeScript.tmLanguage.json',
+  'text.html.basic': '/html.tmLanguage.json',
+  'source.css': '/css.tmLanguage.json',
+  'source.js': '/JavaScript.tmLanguage.json',
+  'source.js.jsx': '/JavaScriptReact.tmLanguage.json',
 };
 
 const registry = new vsctm.Registry({
@@ -78,7 +81,7 @@ async function createTokensProvider(
       for (const token of lineTokens.tokens) {
         tokens.push({
           startIndex: token.startIndex,
-          // monaco doesn't support an array of scopes so get the last one in the array
+          // Monaco doesn't support an array of scopes
           scopes: themeTokens
             ? TMToMonacoToken(themeTokens, token.scopes)
             : token.scopes[token.scopes.length - 1],
