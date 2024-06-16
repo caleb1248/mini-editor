@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -7,10 +7,31 @@
     <title>Vite + TS</title>
   </head>
   <body>
-    <div id="app">
-      <!-- <div id="editor-part">
-        <div id="editor-top-bar"></div>
-      </div> -->
+    <div id="app" class="grid grid-rows-[auto_1fr]">
+      <div id="title-bar" class="p-3">hii</div>
+      <div id="main" class="grid grid-cols-[auto_1fr]">
+        <div id="sidebar" style="width: 200px; height: 100%">
+          <h1>sidebar</h1>
+        </div>
+        <div class="grid grid-rows-[auto_1fr]">
+          <div id="editor-top-bar">
+            <div class="tab">HTML</div>
+            <div class="tab">CSS</div>
+            <div class="tab">JavaScript</div>
+            <div class="tab-bar-filler"></div>
+          </div>
+
+          <div id="main-container" class="grid grid-cols-2">
+            <div id="editor-part"></div>
+            <div id="preview-part">
+              <span style="position: absolute; top: 2rem; left: 2rem"
+                >Preview</span
+              >
+              <iframe id="preview"></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>

@@ -6,10 +6,10 @@ An app for testing random small things. Powered by [`monaco editor`](https://www
 
 - The editor
 - Textmate grammar support
+- Page layout
 
 ## Coming soon
 
-- Page layout
 - A preview frame
 - Save project to local device
 - Upload custom files
