@@ -146,6 +146,9 @@ editor._themeService.onDidColorThemeChange((theme: any) => {
     colors.get('sideBar.background')?.rgba ||
     defaultColors['sideBar.background'];
 
+  const sideBarBorder =
+    colors.get('sideBar.border')?.rgba || defaultColors['sideBar.border'];
+
   const titleBarBackground =
     colors.get('titleBar.activeBackground')?.rgba ||
     defaultColors['titleBar.activeBackground'];
@@ -172,8 +175,10 @@ editor._themeService.onDidColorThemeChange((theme: any) => {
     }
   );
 
-  document.getElementById('sidebar')!.style.backgroundColor =
-    rgbaToCSSValue(sideBarBackground);
+  const sideBar = document.getElementById('sidebar')!;
+
+  sideBar.style.backgroundColor = rgbaToCSSValue(sideBarBackground);
+  sideBar.style.borderRight = `1px solid ${rgbaToCSSValue(sideBarBorder)}`;
 
   const titleBar = document.getElementById('title-bar')!;
   titleBar.style.backgroundColor = rgbaToCSSValue(titleBarBackground);
