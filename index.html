@@ -7,13 +7,13 @@
     <title>Vite + TS</title>
   </head>
   <body>
-    <div id="app" class="grid grid-rows-[auto_1fr]">
+    <div id="app" class="grid grid-rows-[auto_minmax(0,1fr)] overflow-hidden">
       <div id="title-bar" class="p-3">hii</div>
-      <div id="main" class="grid grid-cols-[auto_1fr]">
+      <div id="main" class="grid grid-cols-[auto_minmax(0,1fr)]">
         <div id="sidebar" style="width: 200px; height: 100%">
           <h1>sidebar</h1>
         </div>
-        <div class="grid grid-rows-[auto_1fr]">
+        <div class="grid grid-rows-[auto_minmax(0,1fr)] overflow-hidden">
           <div id="editor-top-bar">
             <div class="tab">HTML</div>
             <div class="tab">CSS</div>
