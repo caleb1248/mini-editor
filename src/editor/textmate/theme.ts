@@ -1,8 +1,8 @@
 export interface IVScodeTheme {
-  $schema: 'vscode://schemas/color-theme';
+  $schema: 'vscode://schemas/color-theme' | string;
   name?: string | undefined;
   include?: string | undefined;
-  type: 'dark' | 'light';
+  type: 'dark' | 'light' | string;
   tokenColors: TokenColor[];
   colors?:
     | {
@@ -13,7 +13,7 @@ export interface IVScodeTheme {
 
 export interface TokenColor {
   name?: string;
-  scope: string[];
+  scope: string[] | string;
   settings: {
     foreground: string;
   };

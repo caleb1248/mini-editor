@@ -3,7 +3,9 @@ import * as monaco from 'monaco-editor';
 import { emmetHTML, emmetCSS, emmetJSX } from 'emmet-monaco-es';
 
 import { TokensProviderCache } from './textmate/index';
-import convertTheme, { darkPlusTheme } from './textmate/theme-converter';
+import convertTheme, {
+  darkPlusTheme as darkTheme,
+} from './textmate/theme-converter';
 import { formatCSS, formatHTML } from './prettier/prettier';
 import { rgbaToCSSValue, type Color } from './monaco-colors';
 import defaultColors from './default-colors';
@@ -19,7 +21,7 @@ editorDiv.classList.add('editor');
 document.getElementById('editor-part')?.appendChild(editorDiv);
 
 // Register textmate theme
-const theme = convertTheme(darkPlusTheme);
+const theme = convertTheme(darkTheme);
 
 monaco.editor.defineTheme('dark-plus', theme);
 
@@ -72,6 +74,7 @@ const ts = monaco.editor.createModel(
 
 let tabBackground = defaultColors['tab.inactiveBackground'];
 let tabActiveBackground = defaultColors['tab.activeBackground'];
+// @ts-ignore
 let tabHoverBackground = defaultColors['tab.hoverBackground'];
 let tabActiveBorderTop = defaultColors['tab.activeBorderTop'];
 let tabBorder = defaultColors['tab.border'];
@@ -115,6 +118,7 @@ function setActiveTab(tab: 0 | 1 | 2) {
 setActiveTab(0);
 
 // Apply color theme to tab bar
+// @ts-expect-error
 editor._themeService.onDidColorThemeChange((theme: any) => {
   const colors = theme.colors as Map<string, Color>;
 
