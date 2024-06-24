@@ -1,8 +1,23 @@
 import * as monaco from 'monaco-editor';
 
-const previewIframe = document.createElement('iframe');
+const previewIframe = document.createElement('iframe') as HTMLIFrameElement & {
+  credentialless: boolean;
+  /**
+   * @deprecated
+   */
+  allowPaymentRequest: boolean;
+};
 previewIframe.title = 'Preview';
+previewIframe.credentialless = true;
 previewIframe.classList.add('preview');
+previewIframe.allow =
+  'midi; geolocation; microphone; camera; display-capture; encrypted-media; clipboard-read; clipboard-write; notifications; payment-handler; persistent-storage; background-sync; ambient-light-sensor; accessibility-events;';
+
+previewIframe.sandbox.value =
+  'allow-modals allow-forms allow-scripts allow-popups allow-top-navigation-by-user-activation allow-downloads';
+previewIframe.allowFullscreen = true;
+previewIframe.allowPaymentRequest = true;
+previewIframe.frameBorder = '0';
 
 document.getElementById('preview-part')?.appendChild(previewIframe);
 
@@ -50,7 +65,7 @@ let js = jsModel.getValue();
 
 let updateTimeout: number | undefined = undefined;
 
-const updatePreview = () => {
+export const updatePreview = () => {
   if (updateTimeout) clearTimeout(updateTimeout);
   updateTimeout = setTimeout(() => {
     document.querySelector('#preview-note')?.remove();
@@ -61,6 +76,7 @@ const updatePreview = () => {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Preview</title>
+    <!--<script>window.parent = null; window.top = null; window.frameElement = null;</script>-->
     <style>
       ${css}
     </style>
@@ -80,15 +96,15 @@ updatePreview();
 
 htmlModel.onDidChangeContent(() => {
   html = htmlModel.getValue();
-  updatePreview();
+  // updatePreview();
 });
 
 cssModel.onDidChangeContent(() => {
   css = cssModel.getValue();
-  updatePreview();
+  // updatePreview();
 });
 
 jsModel.onDidChangeContent(() => {
   js = jsModel.getValue();
-  updatePreview();
+  // updatePreview();
 });
