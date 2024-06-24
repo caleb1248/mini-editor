@@ -17,6 +17,7 @@ import vs_light from './light/vs.json';
 import light_plus from './light/light-plus.json';
 import monospace_light from './light/monospace-light.json';
 import light_modern from './light/light-modern.json';
+import monokai from './dark/monokai.json';
 
 // End import themes
 import { IVScodeTheme } from './theme';
@@ -30,14 +31,15 @@ interface Theme {
 }
 
 let themes: Theme[] = [
-  { id: 'vs-dark', data: vs_dark, name: 'Dark (Visual Studio)' },
-  { id: 'dark-plus', data: dark_plus, name: 'Dark+' },
-  { id: 'dark-modern', data: dark_modern, name: 'Dark Modern' },
-  { id: 'monospace-dark', data: monospace_dark, name: 'Monospace Dark' },
   { id: 'vs', data: vs_light, name: 'Light (Visual Studio)' },
   { id: 'light-plus', data: light_plus, name: 'Light+' },
   { id: 'light-modern', data: light_modern, name: 'Light Modern' },
   { id: 'monospace-light', data: monospace_light, name: 'Monospace Light' },
+  { id: 'vs-dark', data: vs_dark, name: 'Dark (Visual Studio)' },
+  { id: 'dark-plus', data: dark_plus, name: 'Dark+' },
+  { id: 'dark-modern', data: dark_modern, name: 'Dark Modern' },
+  { id: 'monokai', data: monokai, name: 'Monokai' },
+  { id: 'monospace-dark', data: monospace_dark, name: 'Monospace Dark' },
 ];
 
 const userThemes = JSON.parse(
@@ -62,7 +64,7 @@ export default function createThemeSelector(
     monaco.editor.defineTheme(id, convertTheme(data))
   );
 
-  monaco.editor.setTheme('dark-plus');
+  monaco.editor.setTheme('dark-modern');
 
   // Add a new command, for getting an accessor.
   let quickInputCommand = editor.addCommand(0, (accessor, func) => {
