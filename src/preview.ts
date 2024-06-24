@@ -1,6 +1,7 @@
 import * as monaco from 'monaco-editor';
 
 const previewIframe = document.createElement('iframe');
+previewIframe.title = 'Preview';
 previewIframe.classList.add('preview');
 
 document.getElementById('preview-part')?.appendChild(previewIframe);
@@ -47,9 +48,14 @@ let html = htmlModel.getValue();
 let css = cssModel.getValue();
 let js = jsModel.getValue();
 
+let updateTimeout: number | undefined = undefined;
+
 const updatePreview = () => {
-  document.querySelector('#preview-note')?.remove();
-  previewIframe.srcdoc = `<!DOCTYPE html>
+  if (updateTimeout) clearTimeout(updateTimeout);
+  updateTimeout = setTimeout(() => {
+    document.querySelector('#preview-note')?.remove();
+    // console.clear();
+    previewIframe.srcdoc = `<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -67,6 +73,7 @@ const updatePreview = () => {
   </body>
 </html>
   `;
+  }, 300);
 };
 
 updatePreview();

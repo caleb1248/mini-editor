@@ -1,15 +1,12 @@
 import * as monaco from 'monaco-editor';
 
 import { emmetHTML, emmetCSS, emmetJSX } from 'emmet-monaco-es';
+// @ts-ignore no typings are available
+import { IDialogService } from 'monaco-editor/esm/vs/platform/dialogs/common/dialogs';
 
 import { TokensProviderCache } from './textmate/index';
-import convertTheme, {
-  darkPlusTheme as darkTheme,
-} from './textmate/theme-converter';
 import { formatCSS, formatHTML } from './prettier/prettier';
-import { rgbaToCSSValue, type Color } from './monaco-colors';
 import defaultColors from './default-colors';
-
 // Emmet setup
 emmetHTML(monaco);
 emmetCSS(monaco);
@@ -20,15 +17,22 @@ const editorDiv = document.createElement('div');
 editorDiv.classList.add('editor');
 document.getElementById('editor-part')?.appendChild(editorDiv);
 
-// Register textmate theme
-const theme = convertTheme(darkTheme);
+const editor = monaco.editor.create(
+  editorDiv,
+  {
+    tabSize: 2,
+    fontFamily: '"JetBrains Mono", Consolas, "Courier New", monospace',
+    fontLigatures: true,
+    theme: 'vs-dark',
+  },
+  {
+    [IDialogService.toString()]: {
+      error: console.error,
+    },
+  }
+) as monaco.editor.IStandaloneCodeEditor & { _themeService: any };
 
-monaco.editor.defineTheme('dark-plus', theme);
-
-const editor = monaco.editor.create(editorDiv, {
-  tabSize: 2,
-  fontFamily: '"JetBrains Mono", Consolas, "Courier New", monospace',
-});
+editor.focus();
 
 // Begin textmate stuff
 
@@ -72,36 +76,7 @@ const ts = monaco.editor.createModel(
   monaco.Uri.file('main.ts')
 );
 
-let tabBackground = defaultColors['tab.inactiveBackground'];
-let tabActiveBackground = defaultColors['tab.activeBackground'];
-// @ts-ignore
-let tabHoverBackground = defaultColors['tab.hoverBackground'];
-let tabActiveBorderTop = defaultColors['tab.activeBorderTop'];
-let tabBorder = defaultColors['tab.border'];
-
-let activeTab: 0 | 1 | 2 = 0;
-
-// Add tab functionality
-const tabs = document.querySelectorAll<HTMLElement>('#editor-top-bar > .tab');
-for (let i = 0; i < tabs.length; i++)
-  tabs[i].addEventListener('click', () => setActiveTab(i as 0 | 1 | 2));
-
-function setActiveTab(tab: 0 | 1 | 2) {
-  activeTab = tab;
-  tabs.forEach((tab, i) => {
-    tab.style.borderRight = `1px solid ${rgbaToCSSValue(tabBorder)}`;
-    if (i === activeTab) {
-      tab.style.borderTop = `2px solid ${rgbaToCSSValue(tabActiveBorderTop)}`;
-      tab.style.backgroundColor = rgbaToCSSValue(tabActiveBackground);
-
-      tab.style.borderBottom = `1px solid rgba(0,0,0,0)`;
-    } else {
-      tab.style.backgroundColor = rgbaToCSSValue(tabBackground);
-      tab.style.borderTop = `2px solid rgba(0,0,0,0)`;
-      tab.style.borderBottom = `1px solid ${rgbaToCSSValue(tabBorder)}`;
-    }
-  });
-
+function setModelBasedOnTab(tab: 0 | 1 | 2) {
   switch (tab) {
     case 0:
       editor.setModel(html);
@@ -115,81 +90,7 @@ function setActiveTab(tab: 0 | 1 | 2) {
   }
 }
 
-setActiveTab(0);
-
-// Apply color theme to tab bar
-// @ts-expect-error
-editor._themeService.onDidColorThemeChange((theme: any) => {
-  const colors = theme.colors as Map<string, Color>;
-
-  tabBackground =
-    colors.get('tab.inactiveBackground')?.rgba ||
-    defaultColors['tab.inactiveBackground'];
-  tabActiveBackground =
-    colors.get('tab.activeBackground')?.rgba ||
-    defaultColors['tab.activeBackground'];
-
-  tabHoverBackground =
-    colors.get('tab.hoverBackground')?.rgba ||
-    defaultColors['tab.hoverBackground'];
-
-  tabBorder = colors.get('tab.border')?.rgba || defaultColors['tab.border'];
-
-  tabActiveBorderTop =
-    colors.get('tab.activeBorderTop')?.rgba ||
-    defaultColors['tab.activeBorderTop'];
-
-  const tabBarBackground =
-    colors.get('editorGroupHeader.tabsBackground')?.rgba ||
-    defaultColors['editorGroupHeader.tabsBackground'];
-
-  document.getElementById('editor-top-bar')!.style.backgroundColor =
-    rgbaToCSSValue(tabBarBackground);
-
-  const sideBarBackground =
-    colors.get('sideBar.background')?.rgba ||
-    defaultColors['sideBar.background'];
-
-  const sideBarBorder =
-    colors.get('sideBar.border')?.rgba || defaultColors['sideBar.border'];
-
-  const titleBarBackground =
-    colors.get('titleBar.activeBackground')?.rgba ||
-    defaultColors['titleBar.activeBackground'];
-
-  const titleBarBorder =
-    colors.get('titleBar.border')?.rgba || defaultColors['titleBar.border'];
-
-  const tabs = document.querySelectorAll<HTMLElement>('.tab');
-  tabs.forEach((tab, i) => {
-    tab.style.borderRight = `1px solid ${rgbaToCSSValue(tabBorder)}`;
-    if (i === activeTab) {
-      tab.style.borderTop = `2px solid ${rgbaToCSSValue(tabActiveBorderTop)}`;
-      tab.style.backgroundColor = rgbaToCSSValue(tabActiveBackground);
-      tab.style.borderBottom = `1px solid rgba(0,0,0,0)`;
-    } else {
-      tab.style.backgroundColor = rgbaToCSSValue(tabBackground);
-      tab.style.borderTop = `2px solid rgba(0,0,0,0)`;
-      tab.style.borderBottom = `1px solid ${rgbaToCSSValue(tabBorder)}`;
-    }
-  });
-  Array.from(document.querySelectorAll<HTMLElement>('.tab-bar-filler')).forEach(
-    (el) => {
-      el.style.borderBottom = `1px solid ${rgbaToCSSValue(tabBorder)}`;
-    }
-  );
-
-  const sideBar = document.getElementById('sidebar')!;
-
-  sideBar.style.backgroundColor = rgbaToCSSValue(sideBarBackground);
-  sideBar.style.borderRight = `1px solid ${rgbaToCSSValue(sideBarBorder)}`;
-
-  const titleBar = document.getElementById('title-bar')!;
-  titleBar.style.backgroundColor = rgbaToCSSValue(titleBarBackground);
-  titleBar.style.borderBottom = `1px solid ${rgbaToCSSValue(titleBarBorder)}`;
-});
-
-monaco.editor.setTheme('dark-plus');
+setModelBasedOnTab(0);
 
 window.addEventListener('resize', () => setTimeout(() => editor.layout(), 100));
 
@@ -233,3 +134,60 @@ monaco.languages.registerDocumentFormattingEditProvider('css', {
 
 // @ts-ignore
 window.editor = editor; // Used for debuggin in the inspect panel.
+
+type ThemeChangedCallback = () => void;
+
+const themeSubscriptions: ThemeChangedCallback[] = [];
+
+function onThemeChanged(callback: ThemeChangedCallback): monaco.IDisposable {
+  // Invoke the callback to send the current theme.
+  callback();
+
+  themeSubscriptions.push(callback);
+
+  return {
+    dispose() {
+      const index = themeSubscriptions.indexOf(callback);
+      if (index !== -1) {
+        themeSubscriptions.splice(index, 1);
+      }
+    },
+  };
+}
+
+const colorThemeStyleSheet = document.getElementById(
+  'color-theme'
+) as HTMLStyleElement;
+
+editor._themeService.onDidColorThemeChange(
+  ({ themeData }: { themeData: monaco.editor.IStandaloneThemeData }) => {
+    const colors = {
+      ...defaultColors[themeData.base === 'vs-dark' ? 'dark' : 'light'],
+      ...themeData.colors,
+    };
+
+    let css = '';
+    for (const key in colors) {
+      const value = colors[key];
+      if (value) css += `--${key.replace(/\./g, '-')}: ${value};`;
+    }
+
+    colorThemeStyleSheet.textContent = `div#app{${css}}`;
+
+    themeSubscriptions.forEach((callback) => callback());
+  }
+);
+
+function cssVar(color: string) {
+  return `var(--${color.replace(/\./g, '-')})`;
+}
+
+// open the command palette when the user presses ctrl + shift + p
+window.addEventListener('keydown', (e) => {
+  if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() == 'p') {
+    e.preventDefault();
+    editor.trigger('keyboard', 'editor.action.quickCommand', null);
+  }
+});
+
+export { setModelBasedOnTab, onThemeChanged, editor, cssVar };

@@ -15,11 +15,11 @@ export interface TokenColor {
   name?: string;
   scope: string[] | string;
   settings: {
-    foreground: string;
+    background?: string;
+    foreground?: string;
+    fontStyle?: string;
   };
 }
-
-export { default } from './themes/monospace-dark.json';
 // export default {
 //   $schema: 'vscode://schemas/color-theme',
 //   type: 'dark',

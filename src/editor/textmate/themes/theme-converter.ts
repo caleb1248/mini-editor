@@ -1,4 +1,3 @@
-import darkPlusTheme from './theme';
 import type { IVScodeTheme } from './theme';
 
 import type { editor } from 'monaco-editor';
@@ -29,4 +28,4 @@ export function convertTheme(theme: IVScodeTheme): editor.IStandaloneThemeData {
   };
 }
 
-export { darkPlusTheme, convertTheme as default };
+export { convertTheme as default };

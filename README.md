@@ -15,3 +15,7 @@ An app for testing random small things. Powered by [`monaco editor`](https://www
 - User theme customization
 - Save project to local device
 - Upload custom files
+
+## Other things to do
+
+Notification height increases by a pixel or two when the action icons appear
