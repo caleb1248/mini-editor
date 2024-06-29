@@ -3,6 +3,7 @@ import { loadWASM, OnigScanner, OnigString } from 'vscode-oniguruma';
 import * as monaco from 'monaco-editor';
 import wasmURL from 'vscode-oniguruma/release/onig.wasm?url';
 import { TMToMonacoToken } from './tm-to-monaco-token';
+import { IColorTheme } from './tm-to-monaco-token-v2';
 
 const wasmPromise = fetch(wasmURL)
   .then((response) => response.arrayBuffer())
@@ -48,20 +49,39 @@ if (!grammar) {
 
 async function createTokensProvider(
   scopeName: string,
-  editor?: monaco.editor.IStandaloneCodeEditor | undefined
+  editor?:
+    | (monaco.editor.IStandaloneCodeEditor & { _themeService?: any })
+    | undefined
 ): Promise<monaco.languages.TokensProvider> {
-  let themeTokens: string[] | undefined;
+  let colorTheme: IColorTheme | undefined = undefined;
 
   if (editor) {
-    // @ts-expect-error
-    themeTokens = editor._themeService._theme.themeData.rules.map(
-      (rule: monaco.editor.ITokenThemeRule) => rule.token
-    );
+    const rules: monaco.editor.ITokenThemeRule[] =
+      editor._themeService._theme.themeData.rules;
+    colorTheme = {
+      tokenColors: rules.map((rule) => ({
+        scope: rule.token,
+        settings: {
+          foreground: rule.foreground,
+          background: rule.background,
+          fontStyle: rule.fontStyle,
+        },
+      })),
+    };
 
     // @ts-expect-error
     editor._themeService.onDidColorThemeChange((theme) => {
       const rules: monaco.editor.ITokenThemeRule[] = theme.themeData.rules;
-      themeTokens = rules.map((rule) => rule.token);
+      colorTheme = {
+        tokenColors: rules.map((rule) => ({
+          scope: rule.token,
+          settings: {
+            foreground: rule.foreground,
+            background: rule.background,
+            fontStyle: rule.fontStyle,
+          },
+        })),
+      };
     });
   }
 
@@ -82,8 +102,8 @@ async function createTokensProvider(
         tokens.push({
           startIndex: token.startIndex,
           // Monaco doesn't support an array of scopes
-          scopes: themeTokens
-            ? TMToMonacoToken(themeTokens, token.scopes)
+          scopes: colorTheme
+            ? TMToMonacoToken(colorTheme, token.scopes)
             : token.scopes[token.scopes.length - 1],
         });
       }

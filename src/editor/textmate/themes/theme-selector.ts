@@ -21,9 +21,9 @@ import monokai from './dark/monokai.json';
 
 // End import themes
 import { IVScodeTheme } from './theme';
-
-import { showErrorMessage } from '../../../toast/toast.main';
 import convertTheme from './theme-converter';
+import { InstalledThemesPicker, type Pick } from './themepicker2';
+
 interface Theme {
   id: string;
   data: IVScodeTheme;
@@ -51,12 +51,6 @@ Object.entries<any>(userThemes).forEach(
   }
 );
 
-interface Selection {
-  type: 'item' | 'separator';
-  id: string;
-  label: string;
-}
-
 export default function createThemeSelector(
   editor: monaco.editor.IStandaloneCodeEditor & { _themeService: any }
 ) {
@@ -79,7 +73,9 @@ export default function createThemeSelector(
   editor.addAction({
     id: 'change-color-theme',
     label: 'Change Color Theme',
-    run: (editor) => {
+    run: (
+      editor: monaco.editor.IStandaloneCodeEditor & { _themeService: any }
+    ) => {
       // create quick input
       editor.trigger('', quickInputCommand, (quickInput: any) => {
         const lightThemes = themes.filter(
@@ -87,39 +83,31 @@ export default function createThemeSelector(
         );
 
         const darkThemes = themes.filter((theme) => theme.data.type === 'dark');
-        quickInput
-          .pick([
-            { type: 'separator', label: 'light themes' },
-            ...lightThemes.map<Selection>(({ name, id }) => ({
-              label: name,
-              id,
-              type: 'item',
-            })),
-            { type: 'separator', label: 'dark themes' },
-            ...darkThemes.map<Selection>(({ name, id }) => ({
-              label: name,
-              id,
-              type: 'item',
-            })),
-          ])
-          .then((result: Selection | undefined) => {
-            if (!result) return {};
-            // @ts-expect-error
-            const themes = editor._themeService._knownThemes as Map<
-              string,
-              any
-            >;
-            if (!themes.has(result.id)) {
-              showErrorMessage("Cannot find theme '" + result.id + "'.");
-              return;
-            }
+        const picks: Pick[] = [
+          { type: 'separator', label: 'light themes' },
+          ...lightThemes.map<Pick>(({ name, id }) => ({
+            label: name,
+            id: 'theme-' + id,
+            type: 'item',
+            theme: id,
+          })),
+          { type: 'separator', label: 'dark themes' },
+          ...darkThemes.map<Pick>(({ name, id }) => ({
+            label: name,
+            id,
+            type: 'item',
+            theme: id,
+          })),
+        ];
 
-            try {
-              monaco.editor.setTheme(result.id);
-            } catch (e) {
-              showErrorMessage(`Unexpected error when changing theme: ${e}`);
-            }
-          });
+        const picker = new InstalledThemesPicker(
+          {
+            placeholderMessage: 'Choose a color theme',
+          },
+          quickInput
+        );
+
+        picker.openQuickPick(picks, editor._themeService._theme.themeName);
       });
     },
   });
