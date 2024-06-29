@@ -1,4 +1,13 @@
 import * as monaco from 'monaco-editor';
+import { transformCode } from './ts-support';
+
+import { initialize } from 'esbuild-wasm';
+import esbuildWasmURL from 'esbuild-wasm/esbuild.wasm?url';
+import type * as esbuild from 'esbuild-wasm';
+
+await initialize({
+  wasmURL: esbuildWasmURL,
+});
 
 const previewIframe = document.createElement('iframe') as HTMLIFrameElement & {
   credentialless: boolean;
@@ -59,18 +68,20 @@ if (!jsModel) {
   });
 }
 
-let html = htmlModel.getValue();
-let css = cssModel.getValue();
-let js = jsModel.getValue();
+let htmlContent = htmlModel.getValue();
+let cssContent = cssModel.getValue();
+let jsContent = jsModel.getValue();
 
 let updateTimeout: number | undefined = undefined;
 
 export const updatePreview = () => {
   if (updateTimeout) clearTimeout(updateTimeout);
-  updateTimeout = setTimeout(() => {
+  updateTimeout = setTimeout(async () => {
     document.querySelector('#preview-note')?.remove();
-    // console.clear();
-    previewIframe.srcdoc = `<!DOCTYPE html>
+    transformCode(jsContent, 'ts')
+      .then((compilerResult) => {
+        const compiledJS = compilerResult.code;
+        previewIframe.srcdoc = `<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -78,33 +89,85 @@ export const updatePreview = () => {
     <title>Preview</title>
     <!--<script>window.parent = null; window.top = null; window.frameElement = null;</script>-->
     <style>
-      ${css}
+      ${cssContent}
     </style>
   </head>
   <body>
-    ${html}
+    ${htmlContent}
     <script>
-      ${js}
+      ${compiledJS}
     </script>
   </body>
 </html>
   `;
+      })
+      .catch((e: esbuild.TransformFailure) => {
+        previewIframe.srcdoc = `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Preview</title>
+    <!--<script>window.parent = null; window.top = null; window.frameElement = null;</script>-->
+    <style>
+      ${cssContent}
+    </style>
+
+    <!--Error modal styles-->
+    <style>
+      #error-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        margin: 30px auto;
+        padding: 20px;
+        border-radius: 5px;
+        border-top: 5px solid #f44336;
+        background: rgba(0, 0, 0, 0.95);
+        width: 80vw;
+        font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+      }
+
+      #error-modal * {
+        color: #fff;
+      }
+
+      #error-modal h1, #error-modal h2 {
+        font-weight: 200;
+        margin-bottom: 0;
+      }
+    </style>
+  </head>
+  <body>
+    ${htmlContent}
+    <div id="error-modal">
+      <h1>Error</h1>
+      <h2>${e.message}</p>
+    </div>
+    <script></script>
+  </body>
+</html>`;
+      });
   }, 300);
 };
 
 updatePreview();
 
 htmlModel.onDidChangeContent(() => {
-  html = htmlModel.getValue();
+  htmlContent = htmlModel.getValue();
   // updatePreview();
 });
 
 cssModel.onDidChangeContent(() => {
-  css = cssModel.getValue();
+  cssContent = cssModel.getValue();
   // updatePreview();
 });
 
 jsModel.onDidChangeContent(() => {
-  js = jsModel.getValue();
+  jsContent = jsModel.getValue();
   // updatePreview();
 });
