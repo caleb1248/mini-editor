@@ -8,13 +8,14 @@ An app for testing random small things. Powered by [`monaco editor`](https://www
 - Textmate grammar support
 - Page layout
 - A preview frame
+- Theme selector
 
 ## Coming soon
 
 - Stuff inside the sidebar
 - User theme customization
 - Save project to local device
-- Upload custom files
+- ~~Upload custom files~~ - This will not be happening (probably).
 
 ## Other things to do
 
