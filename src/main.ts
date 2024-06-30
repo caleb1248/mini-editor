@@ -1,4 +1,5 @@
 import './style.css';
+import './layout/colors.css';
 import './jetbrains-mono.css';
 import './editor/workers';
 
@@ -6,7 +7,7 @@ import * as monaco from 'monaco-editor';
 
 import { editor, html, css, ts } from './editor/editor.main';
 import initThemeSelector from './editor/textmate/themes/theme-selector';
-import './layout/styles';
+import './layout/tab-functionality';
 import { updatePreview } from './preview';
 import { showErrorMessage } from './toast/toast.main';
 import { Project, openProject, saveProject } from './localDevice';

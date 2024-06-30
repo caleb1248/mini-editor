@@ -1,5 +1,4 @@
 import { setModelBasedOnTab } from '../editor/editor.main';
-import './layout-colors.css';
 
 let activeTab: 0 | 1 | 2 = 0;
 
