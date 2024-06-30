@@ -190,4 +190,4 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-export { setModelBasedOnTab, onThemeChanged, editor, cssVar };
+export { setModelBasedOnTab, onThemeChanged, editor, cssVar, html, css, ts };
