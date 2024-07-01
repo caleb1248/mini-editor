@@ -25,6 +25,7 @@
 
 .tab-bar-filler {
   border-bottom: 1px;
+  background-color: var(--editorGroupHeader-tabsBackground);
 }
 
 #sidebar {
