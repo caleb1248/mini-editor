@@ -2,6 +2,9 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
+/// <reference path="../../../types.ts" />
+
 import type {
   IQuickInputToggle,
   IQuickPick,
@@ -44,7 +47,7 @@ export class InstalledThemesPicker {
       if (selectThemeTimeout) {
         clearTimeout(selectThemeTimeout);
       }
-      selectThemeTimeout = setTimeout(
+      selectThemeTimeout = window.setTimeout(
         () => {
           selectThemeTimeout = undefined;
           console.log(theme);

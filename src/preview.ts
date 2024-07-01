@@ -76,7 +76,7 @@ let updateTimeout: number | undefined = undefined;
 
 export const updatePreview = () => {
   if (updateTimeout) clearTimeout(updateTimeout);
-  updateTimeout = setTimeout(async () => {
+  updateTimeout = window.setTimeout(async () => {
     document.querySelector('#preview-note')?.remove();
     transformCode(jsContent, 'ts')
       .then((compilerResult) => {
