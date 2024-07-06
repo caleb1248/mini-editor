@@ -1,0 +1,64 @@
+/* Basic split view css */
+.split-view {
+  position: relative;
+  display: flex;
+}
+
+.split-view.vertical {
+  flex-direction: row;
+}
+
+.split-view.horizontal {
+  flex-direction: column;
+}
+
+.split-view.vertical > * {
+  min-height: 0;
+}
+
+.split-view.horizontal > * {
+  min-width: 0;
+}
+
+.resize-handle {
+  position: absolute;
+  touch-action: none;
+  z-index: 35;
+}
+
+.resize-handle::before {
+  background: transparent;
+  content: '';
+  height: 100%;
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+}
+
+.resize-handle.hover::before .resize-handle.active::before {
+  background: var(--sash-hoverBorder);
+}
+
+.split-view.vertical > .resize-handle::before {
+  left: calc(50% - 4px / 2);
+  width: 4px;
+}
+
+.split-view.horizontal .resize-handle.horizontal::before {
+  top: calc(50% - 4px / 2);
+  height: 4px;
+}
+
+.split-view.vertical > .resize-bar {
+  cursor: ew-resize;
+  width: 4px;
+  top: 0;
+  width: 100%;
+}
+
+.split-view.horizontal > .resize-bar {
+  cursor: ns-resize;
+  height: 4px;
+  left: 0;
+  width: 100%;
+}

@@ -11,6 +11,8 @@ import './layout/tab-functionality';
 import { updatePreview } from './preview';
 import { showErrorMessage } from './toast/toast.main';
 import { Project, openProject, saveProject } from './localDevice';
+import './layout/sidebar';
+import './layout/splitview';
 
 let currentProject: Project | undefined = undefined;
 

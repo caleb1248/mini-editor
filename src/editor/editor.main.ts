@@ -190,4 +190,20 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
+monaco.languages.registerDocumentSemanticTokensProvider('typescript', {
+  getLegend: () => {
+    return {
+      tokenTypes: ['comment', 'string', 'keyword', 'number', 'regexp', 'operator'],
+      tokenModifiers: ['declaration', 'documentation', 'readonly'],
+    };
+  },
+  provideDocumentSemanticTokens: async (model) => {
+    const tokens = await cache.getTokens(model.uri.toString());
+    return {
+      data: new Uint32Array(tokens),
+    };
+  },
+});
+})
+
 export { setModelBasedOnTab, onThemeChanged, editor, cssVar, html, css, ts };

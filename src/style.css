@@ -55,3 +55,31 @@ iframe.preview {
 div.flex > * {
   min-height: 0;
 }
+
+input {
+  background-color: var(--input-background);
+  padding-top: 3px;
+  padding-bottom: 3px;
+  padding-left: 6px;
+  border: var(--input-border);
+  color: var(--input-foreground);
+  border-radius: 2px;
+}
+
+input:focus {
+  opacity: 1;
+  outline-color: var(--focusBorder);
+  outline-offset: -1px;
+  outline-style: solid;
+  outline-width: 1px;
+}
+
+@layer base {
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.1rem;
+  }
+}
