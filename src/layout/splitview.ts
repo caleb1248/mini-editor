@@ -11,7 +11,6 @@ function registerVerticalSplitView(splitElement: HTMLElement) {
     throw new Error('SplitView must have a child with class "resize-handle"');
   }
 
-  let hover = false;
   let dragging = false;
 
   let dragOffset = 0;
@@ -20,7 +19,6 @@ function registerVerticalSplitView(splitElement: HTMLElement) {
 
   resizeHandle.addEventListener('mouseenter', () => {
     hoverTimeout = window.setTimeout(() => {
-      hover = true;
       resizeHandle.classList.add('hover');
     }, 300);
   });
@@ -31,7 +29,6 @@ function registerVerticalSplitView(splitElement: HTMLElement) {
       hoverTimeout = null;
     }
 
-    hover = false;
     resizeHandle.classList.remove('hover');
   });
 

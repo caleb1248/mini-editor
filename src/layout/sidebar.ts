@@ -42,6 +42,7 @@ function h2(text: string) {
   return h2;
 }
 
+//@ts-expect-error
 function p(text: string) {
   const p = document.createElement('p');
   p.textContent = text;
