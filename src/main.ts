@@ -13,6 +13,7 @@ import { showErrorMessage } from './toast/toast.main';
 import { Project, openProject, saveProject } from './localDevice';
 import './layout/sidebar';
 import './layout/splitview';
+import { setProjectConfiguration } from './settingsService';
 
 let currentProject: Project | undefined = undefined;
 
@@ -38,8 +39,14 @@ editor.addAction({
         htmlContent: html.getValue(),
         cssContent: css.getValue(),
         jsContent: ts.getValue(),
+        configuration: {
+          name: '',
+          description: '',
+          scripts: [],
+          stylesheets: [],
+        },
       }
-    ).catch((e) => showErrorMessage(e.message));
+    ).catch((e) => showErrorMessage('Failed to save project: ' + e.message));
   },
 });
 
@@ -53,6 +60,7 @@ editor.addAction({
         html.setValue(project.htmlContent);
         css.setValue(project.cssContent);
         ts.setValue(project.jsContent);
+        setProjectConfiguration(project.configuration);
         currentProject = project;
       })
       .catch((e) => showErrorMessage(e.message));

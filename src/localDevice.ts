@@ -1,11 +1,13 @@
 // The user should be able to save a project to the local device as a file.
 
+import { IProjectConfiguration } from './settingsService';
+
 interface Project {
   name?: string;
   htmlContent: string;
   cssContent: string;
   jsContent: string;
-
+  configuration: IProjectConfiguration;
   fileHandle?: FileSystemFileHandle;
 }
 

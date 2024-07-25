@@ -25,23 +25,21 @@
   width: 450px;
   display: flex;
   box-shadow: rgba(0, 0, 0, 0.36) 0px 0px 8px 2px;
-  background-color: var(--notifications-background);
+  background-color: var(--vscode-notifications-background);
   cursor: pointer;
   box-sizing: border-box;
   border: 1px solid rgba(0, 0, 0, 0);
 }
 
-.notifications-container .notification > * {
+.notifications-container .notification>* {
   min-height: auto;
 }
 
-.notifications-container .notification.collapsed > * {
+.notifications-container .notification.collapsed>* {
   min-height: 0;
 }
 
-.notifications-container
-  .notification.collapsed
-  > .notification-message-container {
+.notifications-container .notification.collapsed>.notification-message-container {
   overflow-x: hidden;
   overflow-y: hidden;
   word-wrap: break-word;
@@ -49,18 +47,16 @@
   text-overflow: ellipsis;
 }
 
-.notifications-container
-  .notification
-  > .notification-message-container.expanded {
+.notifications-container .notification>.notification-message-container.expanded {
   height: auto;
 }
 
 .notifications-container .notification:hover {
-  background-color: var(--list-hoverBackground);
+  background-color: var(--vscode-list-hoverBackground);
 }
 
 .notifications-container .notification:focus {
-  border: 1px solid var(--focusBorder);
+  border: 1px solid var(--vscode-focusBorder);
 }
 
 .notifications-container .notification .action-toolbar {
@@ -70,7 +66,7 @@
   height: min-content;
 }
 
-.notifications-container .notification .action-toolbar > li {
+.notifications-container .notification .action-toolbar>li {
   display: none;
   box-sizing: border-box;
   align-items: center;
@@ -82,21 +78,22 @@
   height: min-content;
 }
 
-.notifications-container .notification:hover .action-toolbar > li,
-.notifications-container .notification:focus .action-toolbar > li,
-.notifications-container .notification.expanded .action-toolbar > li {
+.notifications-container .notification:hover .action-toolbar>li,
+.notifications-container .notification:focus .action-toolbar>li,
+.notifications-container .notification.expanded .action-toolbar>li {
   display: inline-flex !important;
 }
 
-.notifications-container .notification .action-toolbar > li:hover {
-  background-color: var(--toolbar-hoverBackground);
+.notifications-container .notification .action-toolbar>li:hover {
+  background-color: var(--vscode-toolbar-hoverBackground);
 }
 
 .notification-message-container {
   line-height: 22px;
   flex: 1;
 }
-.notification-message-container.collapsed > span {
+
+.notification-message-container.collapsed>span {
   display: inline-block;
   overflow-wrap: break-word;
   overflow: hidden;
@@ -118,13 +115,13 @@
 }
 
 .notification .codicon.codicon-info {
-  color: var(--notificationsInfoIcon-foreground);
+  color: var(--vscode-notificationsInfoIcon-foreground);
 }
 
 .notification .codicon.codicon-error {
-  color: var(--notificationsErrorIcon-foreground) !important;
+  color: var(--vscode-notificationsErrorIcon-foreground) !important;
 }
 
 .notification .codicon.codicon-warning {
-  color: var(--notificationsWarningIcon-foreground);
+  color: var(--vscode-notificationsWarningIcon-foreground);
 }

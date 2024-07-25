@@ -14,20 +14,20 @@ interface IProjectConfiguration {
   stylesheets: string[];
 }
 
-export function getProjectConfiguration(): IProjectConfiguration {
+function getProjectConfiguration(): IProjectConfiguration {
   return configuration;
 }
 
-export function setProjectName(name: string) {
+function setProjectName(name: string) {
   configuration.name = typeof name === 'string' ? name : '';
 }
 
-export function setProjectDescription(description: string) {
+function setProjectDescription(description: string) {
   configuration.description =
     typeof description === 'string' ? description : '';
 }
 
-export function addScript(scriptURL: string) {
+function addScript(scriptURL: string) {
   if (typeof scriptURL === 'string' && URL.canParse(scriptURL)) {
     configuration.scripts.push(scriptURL);
   } else {
@@ -39,7 +39,7 @@ export function addScript(scriptURL: string) {
   }
 }
 
-export function addStylesheet(stylesheetURL: string) {
+function addStylesheet(stylesheetURL: string) {
   if (typeof stylesheetURL === 'string' && URL.canParse(stylesheetURL)) {
     configuration.stylesheets.push(stylesheetURL);
   } else {
@@ -49,7 +49,15 @@ export function addStylesheet(stylesheetURL: string) {
   }
 }
 
-export function setProjectConfiguration(config: IProjectConfiguration) {
+function getScripts() {
+  return configuration.scripts;
+}
+
+function getStylesheets() {
+  return configuration.stylesheets;
+}
+
+function setProjectConfiguration(config: IProjectConfiguration) {
   // Runtime type check config BEFORE setting it
   if (typeof config.name === 'string') {
     configuration.name = config.name;
@@ -87,3 +95,15 @@ export function setProjectConfiguration(config: IProjectConfiguration) {
     );
   }
 }
+export {
+  getProjectConfiguration,
+  setProjectName,
+  setProjectDescription,
+  addScript,
+  addStylesheet,
+  getScripts,
+  getStylesheets,
+  setProjectConfiguration,
+};
+
+export type { IProjectConfiguration };

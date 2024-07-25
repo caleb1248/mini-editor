@@ -1,5 +1,5 @@
 .tab {
-  border-right: 1px solid var(--tab-border);
+  border-right: 1px solid var(--vscode-tab-border);
   display: flex;
   cursor: pointer;
   line-height: 40px;
@@ -8,32 +8,32 @@
 }
 
 .tab.inactive-tab {
-  background-color: var(--tab-inactiveBackground);
+  background-color: var(--vscode-tab-inactiveBackground);
   border-top: 2px solid rgba(0, 0, 0, 0);
-  border-bottom: 1px solid var(--tab-border);
+  border-bottom: 1px solid var(--vscode-tab-border);
 }
 
 .tab.inactive-tab:hover {
-  background-color: var(--tab-hoverBackground);
+  background-color: var(--vscode-tab-hoverBackground);
 }
 
 .tab.active-tab {
-  background-color: var(--tab-activeBackground);
-  border-top: 2px solid var(--tab-activeBorderTop);
+  background-color: var(--vscode-tab-activeBackground);
+  border-top: 2px solid var(--vscode-tab-activeBorderTop);
   border-bottom: 1px solid rgba(0, 0, 0, 0);
 }
 
 .tab-bar-filler {
   border-bottom: 1px;
-  background-color: var(--editorGroupHeader-tabsBackground);
+  background-color: var(--vscode-editorGroupHeader-tabsBackground);
 }
 
 #sidebar {
-  border-right: 1px solid var(--sideBar-border);
-  background-color: var(--sideBar-background);
+  border-right: 1px solid var(--vscode-sideBar-border);
+  background-color: var(--vscode-sideBar-background);
 }
 
 #title-bar {
-  background-color: var(--titleBar-activeBackground);
-  border-bottom: 1px solid var(--titleBar-border);
+  background-color: var(--vscode-titleBar-activeBackground);
+  border-bottom: 1px solid var(--vscode-titleBar-border);
 }
